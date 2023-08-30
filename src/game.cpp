@@ -108,6 +108,8 @@ void Game::render() {
 void Game::clean() {
   SDL_DestroyWindow(window);
   SDL_DestroyRenderer(renderer);
+  SDL_DestroyTexture(birdAnimationStill);
+  SDL_DestroyTexture(birdAnimationUp);
   TTF_Quit();
   IMG_Quit();
   SDL_Quit();
@@ -190,7 +192,7 @@ void Game::shiftPolesLeft() {
 bool Game::checkPoleCollision() {
   static int bird_front = bird.x + Bird::WIDTH;
 
-  for (Pole& pole : poles) {
+  for (const Pole& pole : poles) {
     if (pole.top.x - bird_front > 0 || (pole.top.x + SpawnPole::WIDTH) - bird.x < 0) continue;
 
     if (bird.y < 0) return true;
@@ -205,7 +207,7 @@ bool Game::checkFinishedPole() {
   static int bird_front = bird.x + Bird::WIDTH;
   static bool finished = true;
 
-  for (Pole& pole : poles) {
+  for (const Pole& pole : poles) {
     if (pole.top.x - bird_front > 0 || (pole.top.x + SpawnPole::WIDTH) - bird.x < 0) continue;
 
     if (finished) return false;
@@ -254,8 +256,7 @@ void Game::reset() {
 void Game::renderCounter() {
   constexpr SDL_Color black = { 0, 0, 0 };
 
-  static SDL_Surface* surface;
-  static SDL_Texture* texture;
+  static SDL_Texture* texture = nullptr;
   static SDL_Rect rect;
 
   static int lastCount = -1;
@@ -267,9 +268,12 @@ void Game::renderCounter() {
     const char* text = textString.c_str();
     int text_size = strlen(text);
 
-    surface = TTF_RenderText_Solid(font, text, black);
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text, black);
+    if (texture) SDL_DestroyTexture(texture);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
-    rect = { (Window::WIDTH - (pixelPerChar * text_size)) / 2, 50, pixelPerChar * text_size, 100 };
+    SDL_FreeSurface(surface);
+
+    rect = { (Window::WIDTH - (pixelPerChar * text_size)) / 2, 50, pixelPerChar * text_size, 120 };
 
     lastCount++;
   }
