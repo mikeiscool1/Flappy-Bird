@@ -5,7 +5,7 @@ Game::Game():
   isRunning(false),
   screen(Screen::AWAIT_BEGIN),
   bird({ (Window::WIDTH - Bird::WIDTH) / 2, (Window::HEIGHT - Bird::HEIGHT) / 2, Bird::WIDTH, Bird::HEIGHT }),
-  gforce(9),
+  gforce(100),
   counter(0)
  {}
 
@@ -196,7 +196,8 @@ bool Game::checkPoleCollision() {
     if (pole.top.x - bird_front > 0 || (pole.top.x + SpawnPole::WIDTH) - bird.x < 0) continue;
 
     if (bird.y < 0) return true;
-    if (bird.y <= pole.top.y + pole.top.h) return true;
+    // + 10 provides some lenience to the collision
+    if (bird.y + 10 <= pole.top.y + pole.top.h) return true;
     if (bird.y + Bird::HEIGHT >= pole.bottom.y) return true;
   }
 
@@ -221,7 +222,7 @@ bool Game::checkFinishedPole() {
 }
 
 void Game::renderBird() {
-  if (gforce <= 5) {
+  if (gforce <= 13) {
     SDL_RenderCopy(renderer, birdAnimationUp, NULL, &bird);
 
     bird.h = Bird::HEIGHT + 10;
@@ -242,7 +243,7 @@ void Game::flap() {
 void Game::gravity() {
   bird.y += gforce;
   if (bird.y + Bird::HEIGHT > Window::HEIGHT) bird.y = Window::HEIGHT - Bird::HEIGHT;
-  gforce += 1;
+  gforce += Bird::GRAVITY;
 
   if (bird.y + Bird::HEIGHT == Window::HEIGHT) screen = Screen::DIED;
 }
@@ -254,7 +255,7 @@ void Game::reset() {
 }
 
 void Game::renderCounter() {
-  constexpr SDL_Color black = { 0, 0, 0 };
+  constexpr SDL_Color white = { 255, 255, 255 };
 
   static SDL_Texture* texture = nullptr;
   static SDL_Rect rect;
@@ -268,7 +269,7 @@ void Game::renderCounter() {
     const char* text = textString.c_str();
     int text_size = strlen(text);
 
-    SDL_Surface *surface = TTF_RenderText_Solid(font, text, black);
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text, white);
     if (texture) SDL_DestroyTexture(texture);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);

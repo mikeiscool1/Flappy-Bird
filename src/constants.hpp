@@ -27,7 +27,8 @@ namespace Bird {
   constexpr int HEIGHT = 48;
   constexpr int WIDTH = 68;
   constexpr int FLY_SPEED = 3;
-  constexpr int FLY_POWER = 12;
+  constexpr int FLY_POWER = 10;
+  constexpr float GRAVITY = 0.7f;
 }
 
 namespace SpawnPole {
@@ -39,4 +40,4 @@ namespace SpawnPole {
   constexpr int DISTANCE = 300 / Bird::FLY_SPEED;
 }
 
-#define Colors_background 169, 237, 252, 255
+#define Colors_background 50, 0, 143, 255

@@ -38,7 +38,7 @@ private:
   SDL_Texture *birdAnimationUp;
   SDL_Texture *poleTexture;
 
-  int gforce;
+  float gforce;
 
   unsigned int counter;
 
